@@ -218,8 +218,16 @@ curl -X POST http://localhost:3000/bfhl \
 
 This API can be deployed to various platforms:
 
+### Railway (Recommended)
+1. **Go to [railway.app](https://railway.app)**
+2. **Sign up/Login** with GitHub
+3. **Click "Deploy from GitHub repo"**
+4. **Select this repository**
+5. **Click "Deploy Now"**
+6. **Get your live URL** from the Settings tab
+
+### Other Platforms
 - **Vercel**: Supports Node.js APIs
-- **Railway**: Easy deployment with Git integration
 - **Render**: Free tier available
 - **Heroku**: Traditional Node.js hosting
 
