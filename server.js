@@ -103,6 +103,15 @@ app.post("/bfhl", (req, res) => {
   }
 });
 
+// Optional GET handler for /bfhl to avoid browser GET errors
+app.get("/bfhl", (req, res) => {
+  res.status(200).json({
+    message: "Use POST /bfhl with JSON body { data: [...] }",
+    example_body: { data: ["a", "1", "334", "4", "R", "$"] },
+    method: "POST",
+  });
+});
+
 // Health check endpoint
 app.get("/", (req, res) => {
   res.json({
