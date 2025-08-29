@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bajaj API Tester</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .form-group {
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #555;
+      }
+      input[type="text"],
+      textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+        font-family: monospace;
+      }
+      textarea {
+        min-height: 80px;
+        resize: vertical;
+      }
+      button {
+        background-color: #007bff;
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;
+        margin: 0;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      .result {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 5px;
+        white-space: pre-wrap;
+        font-family: monospace;
+        font-size: 12px;
+      }
+      .success {
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+      }
+      .error {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+      }
+      .example {
+        background-color: #e7f3ff;
+        border: 1px solid #b3d9ff;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+      }
+      .example h4 {
+        margin: 0 0 10px 0;
+        color: #0066cc;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>API Tester</h1>
+
+      <div class="example">
+        <h4>Example Inputs (use straight quotes " not curly quotes "):</h4>
+        <p>
+          <strong>Example 1:</strong>
+          <code>["a", "1", "334", "4", "R", "$"]</code>
+        </p>
+        <p>
+          <strong>Example 2:</strong>
+          <code>["2", "a", "y", "4", "&", "-", "*", "5", "92", "b"]</code>
+        </p>
+        <p><strong>Example 3:</strong> <code>["A", "ABcD", "DOE"]</code></p>
+        <p style="color: #d63384; font-size: 12px">
+          Important: Use straight quotes (") not curly quotes (")
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label for="apiInput">Choose input method:</label>
+        <div style="margin-bottom: 15px">
+          <button
+            type="button"
+            onclick="setExample(1)"
+            style="width: auto; margin-right: 10px; background-color: #28a745"
+          >
+            Example 1
+          </button>
+          <button
+            type="button"
+            onclick="setExample(2)"
+            style="width: auto; margin-right: 10px; background-color: #28a745"
+          >
+            Example 2
+          </button>
+          <button
+            type="button"
+            onclick="setExample(3)"
+            style="width: auto; margin-right: 10px; background-color: #28a745"
+          >
+            Example 3
+          </button>
+          <button
+            type="button"
+            onclick="setCustomInput()"
+            style="width: auto; background-color: #ffc107; color: #000"
+          >
+            Custom Input
+          </button>
+        </div>
+
+        <div id="inputContainer">
+          <input
+            type="text"
+            id="apiInput"
+            placeholder='["a", "1", "334", "4", "R", "$"]'
+            value='["a", "1", "334", "4", "R", "$"]'
+          />
+        </div>
+
+        <div style="margin-top: 10px; font-size: 12px; color: #666">
+          <strong>Tips:</strong> Use straight quotes (") not curly quotes (").
+          You can test any array of strings, numbers, or special characters.
+        </div>
+      </div>
+
+      <div style="margin-top: 20px; display: flex; gap: 10px">
+        <button onclick="testAPI()" style="flex: 1; background-color: #007bff">
+          Test API
+        </button>
+        <button
+          onclick="clearResult()"
+          style="flex: 1; background-color: #6c757d"
+        >
+          Clear Result
+        </button>
+      </div>
+
+      <div id="result" class="result" style="display: none"></div>
+    </div>
+
+    <script>
+      async function testAPI() {
+        let input = document.getElementById("apiInput").value.trim();
+        const resultDiv = document.getElementById("result");
+
+        if (!input) {
+          resultDiv.style.display = "block";
+          resultDiv.className = "result error";
+          resultDiv.textContent = "Error: Please enter some input data.";
+          return;
+        }
+
+        try {
+          // Fix common quote issues
+          input = input.replace(/[""]/g, '"'); // Replace curly quotes with straight quotes
+          input = input.replace(/['']/g, "'"); // Replace curly single quotes
+
+          // Parse the input
+          const data = JSON.parse(input);
+
+          // Validate that it's an array
+          if (!Array.isArray(data)) {
+            throw new Error("Input must be an array");
+          }
+
+          // Show loading
+          resultDiv.style.display = "block";
+          resultDiv.className = "result";
+          resultDiv.textContent = "🔄 Testing API...";
+
+          // Make API call
+          const response = await fetch("/bfhl", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ data: data }),
+          });
+
+          const result = await response.json();
+
+          // Display result
+          resultDiv.className = "result success";
+          resultDiv.innerHTML = `
+             <div style="margin-bottom: 10px; font-weight: bold; color: #155724;">API Test Successful!</div>
+             <pre>${JSON.stringify(result, null, 2)}</pre>
+           `;
+        } catch (error) {
+          resultDiv.style.display = "block";
+          resultDiv.className = "result error";
+          resultDiv.innerHTML = `
+             <div style="margin-bottom: 10px; font-weight: bold; color: #721c24;">Error: ${error.message}</div>
+             <div style="font-size: 12px; margin-top: 10px;">
+               <strong>Common issues:</strong><br>
+               • Use straight quotes (") not curly quotes (")<br>
+               • Ensure valid JSON format<br>
+               • Make sure input is an array
+             </div>
+           `;
+        }
+      }
+
+      // Function to clear result
+      function clearResult() {
+        const resultDiv = document.getElementById("result");
+        resultDiv.style.display = "none";
+      }
+
+      // Function to set example inputs
+      function setExample(num) {
+        const examples = {
+          1: '["a", "1", "334", "4", "R", "$"]',
+          2: '["2", "a", "y", "4", "&", "-", "*", "5", "92", "b"]',
+          3: '["A", "ABcD", "DOE"]',
+        };
+        setInputType("text");
+        document.getElementById("apiInput").value = examples[num];
+      }
+
+      // Function to set custom input mode
+      function setCustomInput() {
+        setInputType("textarea");
+        document.getElementById("apiInput").value =
+          '["test", "123", "ABC", "@", "#", "42"]';
+        document.getElementById("apiInput").placeholder =
+          'Enter your custom array here...\nExample: ["test", "123", "ABC", "@", "#", "42"]';
+      }
+
+      // Function to switch between input types
+      function setInputType(type) {
+        const container = document.getElementById("inputContainer");
+        const currentInput = document.getElementById("apiInput");
+        const currentValue = currentInput.value;
+
+        if (type === "textarea") {
+          container.innerHTML = `
+             <textarea
+               id="apiInput"
+               placeholder="Enter your custom array here...&#10;Example: [&quot;test&quot;, &quot;123&quot;, &quot;ABC&quot;, &quot;@&quot;, &quot;#&quot;, &quot;42&quot;]"
+             >${currentValue}</textarea>
+           `;
+        } else {
+          container.innerHTML = `
+             <input
+               type="text"
+               id="apiInput"
+               placeholder='["a", "1", "334", "4", "R", "$"]'
+               value="${currentValue}"
+             />
+           `;
+        }
+
+        // Reattach event listener
+        document
+          .getElementById("apiInput")
+          .addEventListener("keypress", function (e) {
+            if (e.key === "Enter" && type === "text") {
+              testAPI();
+            }
+          });
+      }
+
+      // Allow Enter key to submit
+      document
+        .getElementById("apiInput")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            testAPI();
+          }
+        });
+    </script>
+  </body>
+</html>
