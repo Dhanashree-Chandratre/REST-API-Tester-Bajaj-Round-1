@@ -1,4 +1,4 @@
-# Bajaj API - Round 1
+# Bajaj API Tester - Round 1
 
 A REST API built with Node.js that processes arrays and returns categorized data including numbers, alphabets, and special characters.
 
